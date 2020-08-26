@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block navbar %}
+    {{ nav.loggedoutnavbar.render() }}
+    {% endblock %}
+    <meta charset="UTF-8">
+    <title>NBA On Demand</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Set up text notifications for close games in the NBA Playoffs">
+    <meta name="keywords" content="reddit, minimal, productivity">
+    {% block headstyle %}
+    {% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css' ) }}">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
+  </head>
+  <body>
+    <div class="container">
+      {% block content %}
+      {% endblock %}
+    </div>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.0/dist/jquery.validate.min.js"></script>
+    <script>
+      $("nav").addClass('navbar-fixed-top').addClass('navbar-custom');
+      $("nav").find('ul').each(function() {
+        $(this).addClass('pull-right');
+      });
+    </script>
+    {% block addScripts %}
+    {% endblock %}
+  </body>
+</html>
