@@ -14,7 +14,7 @@ triggers['time'] = datetime.datetime.strptime(triggers['time'], '%M:%S')
 
 def NBAScoreboard() -> List[Dict]:
     '''
-    Get list of dictionary of daily NBA game data. 
+    Get list of dictionary of daily NBA game data.
     '''
     NBA_BASE='https://data.nba.net/10s/'
     r = requests.get(NBA_BASE + '/prod/v2/today.json').json()
@@ -42,14 +42,14 @@ def get_exciting_games():
     output = ''
     for game in games:
         # Make sure this game has started
-        # if not game['isGameActivated']:
-        #     continue
+        if not game['isGameActivated']:
+             continue
 
         # Parse game info
         home = game['hTeam']
         away = game['vTeam']
         score_diff = abs(int(home['score'])-int(away['score']))
-        clock = format_datetime(game['clock']) 
+        clock = format_datetime(game['clock'])
         quarter = game['period']['current']
 
         # If it's an interesting game, show us the game info!
@@ -61,5 +61,5 @@ def get_exciting_games():
 
         else: # PURELY FOR TESTING
             output += "\n" + f"{home['triCode']} {home['score']} - {away['triCode']} {away['score']}"
-        
+
     return output
