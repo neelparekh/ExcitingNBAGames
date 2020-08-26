@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block headstyle %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/signin.css' ) }}">
+{% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+  <br>
+  <div class="alert alert-danger text-center">
+      {{ messages[0] }}
+  </div>
+{% endif %}
+{% endwith %}
+  <form id="signUpForm" class="form-signin" method="POST" action="/signup">
+    <h2 class="form-signin-heading text-center">Sign Up</h2>
+    <label for="email" class="sr-only">Email</label>
+    <input type="text" name="email" id="email" class="form-control" placeholder="Email" required autofocus>
+    <br>
+    <label for="password" class="sr-only">Password</label>
+    <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+    <input type="hidden" id="redirectloc" name="next">
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Create Account</button>
+  </form>
+  <h4 class="text-center">Already have an account? <a href=/login>Log In.</a></h4>
+{% endblock %}
+
+{% block addScripts %}
+  <script>
+    $('body').addClass('{{ pageClass }}');
+  </script>
+{% endblock %}
