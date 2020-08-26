@@ -5,6 +5,7 @@ include
 lib
 .tox
 venv
+.sqlite
 .coverage
 .Python
 *.pyc
