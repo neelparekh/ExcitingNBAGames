@@ -1,12 +1,12 @@
 # Alerts for Exciting NBA Games
 
-Get a text message to your phone number (Twilio) when an NBA game becomes exciting. Uses Python and Flask. 
+Get a text message to your phone number (Twilio) when an NBA game becomes exciting. Uses Python and Flask.
 
 ## Set up
 
 ### Requirements
 
-- [Python](https://www.python.org/) **3.6**, **3.7** or **3.8** version. 
+- [Python](https://www.python.org/) **3.6**, **3.7** or **3.8** version.
 
 ### Twilio Account Settings
 
@@ -24,7 +24,7 @@ Before we begin, we need to collect all the config values we need to run the app
 
    ```bash
    git clone <this_repo>
-   cd lead-alerts-flask
+   cd ExcitingNBAGames
    ```
 
 2. Create your virtual environment, load it and install the dependencies. They're outlined in the requirements.txt

@@ -1,0 +1,70 @@
+body {
+  min-height: 90%;
+  padding-top: 50px;
+}
+
+.navbar-custom {
+  background-color:#575BA8!important;
+}
+
+.navbar-custom ul {
+  padding-top: 5px;
+}
+
+.navbar-custom a {
+  color: white!important;
+  font-size: 18px;
+}
+
+.navbar-custom .active a {
+  color: white!important;
+  font-size: 18px;
+  background: #3C448D!important;
+  border-radius: 15px;
+}
+
+.quickstart,.login {
+  background: white;
+}
+
+.emptyspace {
+  height:12vh;
+}
+
+.big-h1 {
+  font-size:50px;
+}
+
+.thin-font {
+  font-family: 'Open Sans', sans-serif;
+}
+
+#outputPanel {
+  display:none;
+}
+
+.active-custom {
+  background: none;
+}
+
+.green-text {
+  color:green;
+}
+
+.smaller-text {
+  font-size:13px;
+}
+
+@media only screen and (min-width: 700px) {
+  .mobile-only {
+    display:none;
+  }
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.slight-margin {
+  margin: 8px;
+}
