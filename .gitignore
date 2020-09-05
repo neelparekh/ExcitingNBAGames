@@ -8,6 +8,7 @@ venv
 *.sqlite
 .coverage
 .Python
+*.sqlite
 *.pyc
 *.project
 *.pydevproject

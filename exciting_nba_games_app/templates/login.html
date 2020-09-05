@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block headstyle %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/signin.css' ) }}">
+{% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+  <br>
+  <div class="alert alert-danger text-center">
+      {{ messages[0] }}
+  </div>
+{% endif %}
+{% endwith %}
+  <form class="form-signin" method="POST" action="/login">
+    <h2 class="form-signin-heading text-center">Login</h2>
+    <label for="inputEmail" class="sr-only">Email</label>
+    <input type="text" name="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+    <br>
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
+
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" name="remember" value="remember-me"> Remember me
+      </label>
+    </div>
+    <input type="hidden" id="redirectloc" name="next">
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+  </form>
+  <h4 class="text-center">Don't have an account? <a href="/signup">Sign up!</a></h4>
+{% endblock %}
+
+{% block addScripts %}
+  <script>
+    $('body').addClass('{{ pageClass }}');
+
+    function getUrlVars(queryParam) {
+      var vars = {};
+      var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+          vars[key] = value;
+      });
+      return vars[queryParam];
+    }
+    if (decodeURIComponent(getUrlVars('next')) === "undefined") {
+      $('#redirectloc').val('/home');
+    } else {
+      $('#redirectloc').val(decodeURIComponent(getUrlVars('next')));
+    }
+  </script>
+{% endblock %}
