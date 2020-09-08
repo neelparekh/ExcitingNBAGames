@@ -1,13 +1,14 @@
-from flask import Flask, render_template, request, make_response, jsonify, redirect, Blueprint, send_from_directory, url_for, flash
+from flask import Flask, render_template, request, make_response, jsonify, redirect, Blueprint, url_for, flash
 from flask_bootstrap import Bootstrap
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-from typing import List, Dict, Tuple
-from send_sms import send_SMS
-from ExcitingNBAGames import get_exciting_games
+from twilio.rest import Client
+import os
+import re
+from random import randint
+import datetime
 
 # Basic config for Flask site
 app = Flask(__name__)
@@ -16,6 +17,11 @@ nav = Nav(app)
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
+account_sid   = os.getenv("TWILIO_ACCOUNT_SID")
+auth_token    = os.getenv("TWILIO_AUTH_TOKEN")
+service_sid   = os.getenv("TWILIO_SERVICE_ID")
+twilio_number = os.getenv("TWILIO_PHONE_NUMBER")
+VERIFY_SID = "VA442eaff8b7200bde1797269cd28eb572"
 
 app.config['SECRET_KEY'] = b'z=\x19\xd5\xc2\xf0\x137\xc0\n\xdc\x9a*}\xd2\xd2'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
@@ -23,13 +29,21 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 # User object
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
-    email = db.Column(db.String(500), unique=True)
-    password = db.Column(db.String(100))
-
-    def get_email(self):
-        return self.email
+    phone = db.Column(db.String(15), unique=True)
+    verifyCode = db.Column(db.Integer())
+    verifyCodeTimestamp = db.Column(db.DateTime())
+    isVerified = db.Column(db.Boolean())
+    wantsNotifications = db.Column(db.Boolean())
+    def get_phone(self):
+        return self.phone
     def get_id(self):
         return self.id
+    def get_verify_code(self):
+        return self.verifyCode
+    def get_verify_code_timestamp(self):
+        return self.verifyCodeTimestamp
+    def get_is_verified(self):
+        return self.isVerified
 
 # blueprint for auth routes in our app
 auth = Blueprint('auth', __name__)
@@ -102,8 +116,7 @@ def load_user(user_id):
 @nav.navigation('loggedoutnavbar')
 def create_navbar():
     home_view = View('Home', 'home')
-    test_view = View('Test', 'testNotifs')
-    return Navbar(home_view, test_view)
+    return Navbar(home_view)
 
 @nav.navigation('loggedinnavbar')
 def create_loggedinnavbar():
@@ -121,18 +134,26 @@ def home():
 def signup():
     return render_template('signup.html')
 
-@app.route("/testNotifs")
-def testNotifs():
-    exciting_games = get_exciting_games()
-    if exciting_games != '':
-        print(exciting_games)
-        data = {'message_body': exciting_games + '\n\n And Remember: Always double back!'}
-        result = send_SMS(data, '+14084807564')
-        return result
-    else:
-        return "No exciting NBA games found."
+@app.route("/verify_phone", methods=["POST"])
+def verifyPhone():
+    inputPhone = request.form['phone']
+    valid = re.match("^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$", inputPhone)
+    if not valid:
+        flash('Invalid Phone Number', 'error')
+        return redirect(url_for('home'))
 
+    try:
+        newUser = User(phone=inputPhone,
+                       verifyCode=random(5),
+                       verifyCodeTimestamp=datetime.datetime.now())
+        db.session.add(newUser)
+        db.session.commit()
+    except:
+        flash('DB Commit Failed', 'error')
+        return redirect(url_for('home'))
 
+    flash('Validated!', 'success')
+    return redirect(url_for('home'))
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -4,39 +4,32 @@
   <div class="emptyspace"></div>
   <br>
   <div class="text-center overlay-diag">
-    <h1 class="thin-font big-h1">Welcome to NBA On Demand Notifications.</h1>
-    <h3 class="thin-font">Enter your favorite team and the settings upon which you wish you to get texts.</h3>
+    <h1 class="thin-font big-h1">Welcome to NBA On Demand Notifications</h1>
+    <h3 class="thin-font">Enter your phone number to get started</h3>
     <br>
-    <div class="row">
-      <div class="col-md-10 col-md-offset-2 col-sm-11">
-        <form id="getStartedForm">
-          <div class="input-group col-md-5 col-sm-6 col-xs-12 col-xs-offset-text-center">
-            <input id="nba_team" type="text" class="form-control" placeholder="Warriors, Mavs, Etc." required>
-          </div>
-          <div class="col-md-1 col-xs-1" text-center>
-            <button class="btn btn-success" type="submit">Get Started!</button>
-          </div>
-        </form>
-      </div>
-    </div>
-    <br>
-    <div class="row">
-      <div class="col-md-10 col-md-offset-1">
-        <div id="possibleError" class="alert"></div>
-      </div>
-    </div>
-    <br><br><br>
-    <div class="row">
-      <div class="col-md-8 col-md-offset-2">
-        <div id="outputPanel" class="panel panel-default">
-          <div class="panel-heading">
-            <h3 id="panelHeader"></h3>
-          </div>
-          <div id="panelBody" class="panel-body">
-          </div>
+    <form class="form-inline" id="verifyPhone" method="POST" action="/verify_phone">
+      <div class="form-group row">
+        <div class="col-md-7">
+          <input type="tel" class="form-control" name="phone" autocomplete="tel" placeholder="123-456-7890">
         </div>
+        <button class="btn btn-success" type="submit">Verify Number</button>
       </div>
-    </div>
+    </form>
+    <br>
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+      {% if errors %}
+        {%- for msg in errors %}
+          <div id="errMsg" class="alert alert-danger">{{msg}}</div>
+        {% endfor -%}
+      {% endif %}
+    {% endwith %}
+    {% with success = get_flashed_messages(category_filter=["success"]) %}
+      {% if success %}
+        {%- for msg in success %}
+          <div id="successMsg" class="alert alert-success">{{msg}}</div>
+        {% endfor -%}
+      {% endif %}
+    {% endwith %}
   </div>
 {% endblock %}
 
