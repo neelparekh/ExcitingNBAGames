@@ -5,16 +5,30 @@
   <br>
   <div class="text-center overlay-diag">
     <h1 class="thin-font big-h1">Welcome to NBA On Demand Notifications</h1>
-    <h3 class="thin-font">Enter your phone number to get started</h3>
     <br>
-    <form class="form-inline" id="verifyPhone" method="POST" action="/verify_phone">
-      <div class="form-group row">
-        <div class="col-md-7">
-          <input type="tel" class="form-control" name="phone" autocomplete="tel" placeholder="123-456-7890">
-        </div>
-        <button class="btn btn-success" type="submit">Verify Number</button>
-      </div>
-    </form>
+    {% with verify = get_flashed_messages(category_filter=["verify"]) %}
+      {% if verify %}
+        <h3 class="thin-font">Enter the five digit code sent to your phone</h3>
+        <form class="form-inline" id="verifyPhone" method="POST" action="/verify_phone">
+          <div class="form-group row">
+            <div class="col-md-7">
+              <input type="number" class="form-control" name="verifyCode">
+            </div>
+            <button class="btn btn-success" type="submit">Verify Number</button>
+          </div>
+        </form>
+      {% else %}
+        <h3 class="thin-font">Enter your phone number to get started</h3>
+        <form class="form-inline" id="enterPhone" method="POST" action="/validate_phone">
+          <div class="form-group row">
+            <div class="col-md-7">
+              <input type="tel" class="form-control" name="phone" autocomplete="tel" placeholder="123-456-7890">
+            </div>
+            <button class="btn btn-success" type="submit">Get Started!</button>
+          </div>
+        </form>
+      {% endif %}
+    {% endwith %}
     <br>
     {% with errors = get_flashed_messages(category_filter=["error"]) %}
       {% if errors %}
