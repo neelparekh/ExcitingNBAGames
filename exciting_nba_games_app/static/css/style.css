@@ -1,39 +1,8 @@
 body {
-  min-height: 90%;
-  padding-top: 50px;
-  background-image: linear-gradient(white, #fdb927);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-
-.navbar-custom {
-  background:#4700eb!important;
-  font-family: 'Rubik', sans-serif;
-  font-weight: 600;
-}
-
-.navbar-custom ul {
-  padding-top: 5px;
-}
-
-.navbar-custom a {
-  color: white!important;
-  font-size: 18px;
-}
-
-.navbar-custom .active a {
-  color: white!important;
-  font-size: 18px;
-  background: #3C448D!important;
-  border-radius: 15px;
-}
-
-.quickstart,.login {
-  background: white;
 }
 
 .emptyspace {
-  height:12vh;
+  height:8vh;
 }
 
 .big-h1 {
@@ -84,10 +53,30 @@ body {
     width: 55px;
     height: 55px;
     padding: 8px;
-    background: #fff;
+    background: black;
     border: 2px solid #666;
-    color: #666;
+    color: white;
     text-align: center;
     font: 32px Arial, sans-serif;
-    left: 50%;
+    margin: 0;
+}
+
+.toast {
+  position: absolute;
+  bottom: 2%;
+  left: 78%;
+  min-height: 100px;
+  min-width: 5vw;
+}
+
+.error-toast {
+  color: red;
+}
+
+.info-toast {
+  color: blue;
+}
+
+.success-toast {
+  color: green;
 }

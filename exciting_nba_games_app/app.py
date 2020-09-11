@@ -1,7 +1,5 @@
 from flask import Flask, render_template, request, make_response, jsonify, redirect, Blueprint, url_for, flash
 from flask_bootstrap import Bootstrap
-from flask_nav import Nav
-from flask_nav.elements import Navbar, View
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from twilio.rest import Client
 import os
@@ -13,8 +11,7 @@ from mysql.connector import Error
 
 # Basic config for Flask site
 app = Flask(__name__)
-Bootstrap(app)
-nav = Nav(app)
+bootstrap = Bootstrap(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 
@@ -63,18 +60,6 @@ def load_user(user_id):
     # since the user_id is just the primary key of our user table, use it in the query for the user
     return
 
-# create navigation bar for site
-@nav.navigation('loggedoutnavbar')
-def create_navbar():
-    home_view = View('Home', 'home')
-    return Navbar(home_view)
-
-@nav.navigation('loggedinnavbar')
-def create_loggedinnavbar():
-    logout_view = View('Logout', 'home')
-    profile_view = View('Profile', 'home')
-    return Navbar(home_view, profile_view, logout_view)
-
 # home page
 @app.route('/')
 def home():
@@ -92,7 +77,8 @@ def validatePhone():
     inputPhone = '+1' + inputPhone.replace("-","").replace("(","").replace(")","")
     code = randint(10000,99999)
     if not valid:
-        flash('Invalid Phone Number', 'error')
+        print('invalid')
+        flash('The phone number you entered was invalid', 'error')
         return redirect(url_for('home'))
 
     try:
@@ -103,7 +89,7 @@ def validatePhone():
         cur.close()
         conn.close()
     except:
-        flash('DB Commit Failed', 'error')
+        flash('The phone number you entered is already in our system', 'info')
         return redirect(url_for('home'))
 
     try:
@@ -116,10 +102,10 @@ def validatePhone():
                              to=inputPhone
                          )
         flash('Verify', 'verify')
-        flash('A text message containing a 5 digit code has been sent to your number')
+        flash('A text message containing a 5 digit code has been sent to your number', 'info')
         return redirect(url_for('home'))
     except:
-        flash('SMS Failed', 'error')
+        flash('We were unable to send a text message to the number you provided', 'error')
         return redirect(url_for('home'))
 
 @app.route("/verify_phone", methods=["POST"])
@@ -138,11 +124,11 @@ def verifyPhone():
             flash('Verification Complete! You will now receive notifications for all close games', 'success')
             return redirect(url_for('home'))
         else:
-            flash('Incorrect Code Entered', 'error')
+            flash('The code you entered was incorrect. Please try again', 'error')
             flash('Verify', 'verify')
             return redirect(url_for('home'))
     except:
-        flash('Verification Failed', 'error')
+        flash('We were unable to verify your number. Please refresh the page and try again', 'error')
         return redirect(url_for('home'))
 
 if __name__ == "__main__":
