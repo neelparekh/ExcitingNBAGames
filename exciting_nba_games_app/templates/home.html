@@ -4,11 +4,12 @@
   <div class="emptyspace"></div>
   <br>
   <div class="text-center overlay-diag">
-    <h1 class="thin-font big-h1">Welcome to NBA On Demand Notifications</h1>
-    <br>
+    <h1 class="hero-font big-h1">NBA On Demand Notifications</h1>
+    <h2 class="hero-font">Never miss another close game in the playoffs</h2>
+    <br><br>
     {% with verify = get_flashed_messages(category_filter=["verify"]) %}
       {% if verify %}
-        <h3 class="thin-font">Enter the five digit code sent to your phone</h3>
+        <h3 class="thin-font">Enter the code sent to your phone below</h3>
         <form class="form-inline" id="verifyPhone" method="POST" action="/verify_phone">
           <div class="form-group row">
             <div class="col-md-7">
@@ -18,7 +19,8 @@
           </div>
         </form>
       {% else %}
-        <h3 class="thin-font">Enter your phone number to get started</h3>
+
+        <h3 class="hero-font">Enter your phone number below</h3>
         <form class="form-inline" id="enterPhone" method="POST" action="/validate_phone">
           <div class="form-group row">
             <div class="col-md-7">

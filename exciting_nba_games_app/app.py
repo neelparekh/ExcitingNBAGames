@@ -31,6 +31,7 @@ DBNAME="dev"
 REGION="us-east-1"
 USER=os.getenv("DB_USER")
 PW=os.getenv("DB_PW")
+TIMEOUT_VALUE=7
 
 # blueprint for auth routes in our app
 auth = Blueprint('auth', __name__)
@@ -88,14 +89,14 @@ def signup():
 def validatePhone():
     inputPhone = str(request.form['phone'])
     valid = re.match("^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$", inputPhone)
-    inputPhone = '+1' + inputPhone
+    inputPhone = '+1' + inputPhone.replace("-","").replace("(","").replace(")","")
     code = randint(10000,99999)
     if not valid:
         flash('Invalid Phone Number', 'error')
         return redirect(url_for('home'))
 
     try:
-        conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW)
+        conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW, connection_timeout=TIMEOUT_VALUE)
         cur = conn.cursor()
         cur.execute(f"INSERT INTO dev.users (phone, verifyCode, verifyCodeTimeStamp, isVerified, wantsNotifications) VALUES ({inputPhone}, {code}, '{datetime.now()}', {0}, {1})")
         conn.commit()
@@ -115,6 +116,7 @@ def validatePhone():
                              to=inputPhone
                          )
         flash('Verify', 'verify')
+        flash('A text message containing a 5 digit code has been sent to your number')
         return redirect(url_for('home'))
     except:
         flash('SMS Failed', 'error')
@@ -133,7 +135,7 @@ def verifyPhone():
             conn.commit()
             cur.close()
             conn.close()
-            flash('Verification Complete!', 'success')
+            flash('Verification Complete! You will now receive notifications for all close games', 'success')
             return redirect(url_for('home'))
         else:
             flash('Incorrect Code Entered', 'error')
