@@ -83,10 +83,19 @@ def validatePhone():
     try:
         conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW, connection_timeout=TIMEOUT_VALUE)
         cur = conn.cursor()
-        cur.execute(f"INSERT INTO dev.users (phone, verifyCode, verifyCodeTimeStamp, isVerified, wantsNotifications) VALUES ({inputPhone}, {code}, '{datetime.now()}', {0}, {1})")
-        conn.commit()
-        cur.close()
-        conn.close()
+        cur.execute(f"SELECT isVerified FROM dev.users WHERE phone={inputPhone}")
+        results = cur.fetchall()
+        if results and results[0][0] is 1:
+            cur.close()
+            conn.close()
+            raise Exception
+        else:
+            cur.execute(f"DELETE FROM dev.users WHERE phone={inputPhone}")
+            conn.commit()
+            cur.execute(f"INSERT INTO dev.users (phone, verifyCode, verifyCodeTimeStamp, isVerified, wantsNotifications) VALUES ({inputPhone}, {code}, '{datetime.now()}', {0}, {1})")
+            conn.commit()
+            cur.close()
+            conn.close()
     except:
         flash('The phone number you entered is already in our system', 'info')
         return redirect(url_for('home'))
