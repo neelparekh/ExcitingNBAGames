@@ -78,9 +78,8 @@ def validatePhone():
     code = randint(10000,99999)
     if not valid:
         print('invalid')
-        flash('The phone number you entered was invalid', 'error')
+        flash('The phone number you entered was invalid. Please try again', 'error')
         return redirect(url_for('home'))
-
     try:
         conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW, connection_timeout=TIMEOUT_VALUE)
         cur = conn.cursor()
@@ -94,17 +93,16 @@ def validatePhone():
 
     try:
         client = Client(account_sid, auth_token)
-        message = client.messages \
-                        .create(
-                             body=str(code),
-                             # messaging_service_sid=service_sid,
-                             from_=twilio_number,
-                             to=inputPhone
-                         )
-        flash('Verify', 'verify')
+        message = client.messages.create(body=str(code),from_=twilio_number,to=inputPhone)
         flash('A text message containing a 5 digit code has been sent to your number', 'info')
         return redirect(url_for('home'))
     except:
+        conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW, connection_timeout=TIMEOUT_VALUE)
+        cur = conn.cursor()
+        cur.execute(f"DELETE FROM dev.users WHERE phone={inputPhone}")
+        conn.commit()
+        cur.close()
+        conn.close()
         flash('We were unable to send a text message to the number you provided', 'error')
         return redirect(url_for('home'))
 
@@ -116,13 +114,22 @@ def verifyPhone():
         cur = conn.cursor()
         cur.execute(f"SELECT * FROM dev.users WHERE verifyCode={verificationCode}")
         results = cur.fetchall()
+        print(results)
         if results:
-            cur.execute(f"UPDATE dev.users SET wantsNotifications=1, isVerified=1 WHERE verifyCode={verificationCode}")
-            conn.commit()
-            cur.close()
-            conn.close()
-            flash('Verification Complete! You will now receive notifications for all close games', 'success')
-            return redirect(url_for('home'))
+            if (datetime.now()-results[0][3]).seconds < 120:
+                cur.execute(f"UPDATE dev.users SET wantsNotifications=1, isVerified=1 WHERE verifyCode={verificationCode}")
+                conn.commit()
+                cur.close()
+                conn.close()
+                flash('Verification Complete! You will now receive notifications for all close games', 'success')
+                return redirect(url_for('home'))
+            else:
+                cur.execute(f"DELETE FROM dev.users WHERE verifyCode={verificationCode}")
+                conn.commit()
+                cur.close()
+                conn.close()
+                flash('You must enter the code within 2 minutes. Please refresh & try again', 'error')
+                return redirect(url_for('home'))
         else:
             flash('The code you entered was incorrect. Please try again', 'error')
             flash('Verify', 'verify')

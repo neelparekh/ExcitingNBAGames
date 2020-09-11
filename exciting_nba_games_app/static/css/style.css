@@ -64,7 +64,7 @@ body {
 .toast {
   position: absolute;
   bottom: 2%;
-  left: 78%;
+  left: 80%;
   min-height: 100px;
   min-width: 5vw;
 }
@@ -79,4 +79,8 @@ body {
 
 .success-toast {
   color: green;
+}
+
+.warning-toast {
+  color: #fff3cd;
 }

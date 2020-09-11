@@ -73,10 +73,10 @@
         {% endfor -%}
       {% endif %}
     {% endwith %}
-    {% with info = get_flashed_messages(category_filter=["success"]) %}
+    {% with info = get_flashed_messages(category_filter=["info"]) %}
       {% if info %}
         {%- for msg in info %}
-        <div class="toast info-toast" role="alert alert-success" aria-live="assertive"
+        <div class="toast info-toast" role="alert alert-info" aria-live="assertive"
              aria-atomic="true" data-delay=3000>
           <div class="toast-header">
             <strong class="mr-auto">Info</strong>
