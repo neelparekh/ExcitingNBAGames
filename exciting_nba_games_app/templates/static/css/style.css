@@ -1,0 +1,74 @@
+body {
+}
+
+.emptyspace {
+  height:8vh;
+}
+
+.big-h1 {
+  font-size:50px;
+  font-weight: 700;
+}
+
+.thin-font {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.hero-font {
+  font-family: 'Rubik', sans-serif;
+}
+
+@media only screen and (min-width: 700px) {
+  .mobile-only {
+    display:none;
+  }
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.slight-margin {
+  margin: 8px;
+}
+
+.steps {
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    padding: 8px;
+    background: black;
+    border: 2px solid #666;
+    color: white;
+    text-align: center;
+    font: 32px Arial, sans-serif;
+    margin: 0;
+}
+
+.toast {
+  position: absolute;
+  bottom: 2%;
+  left: 80%;
+  min-height: 100px;
+  min-width: 5vw;
+}
+
+.error-toast {
+  color: red;
+}
+
+.info-toast {
+  color: blue;
+}
+
+.success-toast {
+  color: green;
+}
+
+.warning-toast {
+  color: #fff3cd;
+}
+
+.section {
+  border: 3px solid black;
+}

@@ -10,7 +10,7 @@ import mysql.connector
 from mysql.connector import Error
 
 # Basic config for Flask site
-app = Flask(__name__)
+app = Flask(__name__, static_folder="templates/static")
 bootstrap = Bootstrap(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
@@ -85,7 +85,7 @@ def validatePhone():
         cur = conn.cursor()
         cur.execute(f"SELECT isVerified FROM dev.users WHERE phone={inputPhone}")
         results = cur.fetchall()
-        if results and results[0][0] is 1:
+        if results and results[0][0] == 1:
             cur.close()
             conn.close()
             raise Exception
@@ -118,6 +118,9 @@ def validatePhone():
 @app.route("/verify_phone", methods=["POST"])
 def verifyPhone():
     verificationCode = request.form['verifyCode']
+    if int(verificationCode) < 10000 or int(verificationCode) > 99999:
+        flash('Please enter a 5 digit code', 'error')
+        return redirect(url_for('home'))
     try:
         conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW)
         cur = conn.cursor()
