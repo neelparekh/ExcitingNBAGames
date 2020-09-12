@@ -18,22 +18,6 @@ body {
   font-family: 'Rubik', sans-serif;
 }
 
-#outputPanel {
-  display:none;
-}
-
-.active-custom {
-  background: none;
-}
-
-.green-text {
-  color:green;
-}
-
-.smaller-text {
-  font-size:13px;
-}
-
 @media only screen and (min-width: 700px) {
   .mobile-only {
     display:none;
@@ -83,4 +67,8 @@ body {
 
 .warning-toast {
   color: #fff3cd;
+}
+
+.section {
+  border: 3px solid black;
 }
