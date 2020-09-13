@@ -13,4 +13,4 @@ DBNAME        = os.getenv("DB_NAME")
 REGION        = os.getenv("AWS_REGION")
 USER          = os.getenv("DB_USER")
 PW            = os.getenv("DB_PW")
-TIMEOUT_VALUE = 7
+TIMEOUT_VALUE = 15
