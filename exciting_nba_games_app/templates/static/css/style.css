@@ -9,6 +9,10 @@
 */
 
 /* Basic */
+	html {
+	  --scroll-behavior: smooth;
+	  scroll-behavior: smooth;
+	}
 
 	body {
 		background: #fff;
@@ -1216,4 +1220,28 @@
 
 		.grid-demo .row.flush > div:last-child span {
 			border-radius: 0 4px 4px 0;
+		}
+
+		.toast {
+		  position: absolute;
+		  bottom: 2%;
+		  left: 80%;
+		  min-height: 100px;
+		  min-width: 5vw;
+		}
+
+		.error-toast {
+		  color: red;
+		}
+
+		.info-toast {
+		  color: blue;
+		}
+
+		.success-toast {
+		  color: green;
+		}
+
+		.warning-toast {
+		  color: #fff3cd;
 		}
