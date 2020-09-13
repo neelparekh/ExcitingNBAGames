@@ -1,3 +1,4 @@
+APScheduler==3.6.3
 Bootstrap-Flask==1.5
 boto3==1.14.56
 botocore==1.17.56
@@ -27,6 +28,7 @@ s3transfer==0.3.3
 six==1.15.0
 SQLAlchemy==1.3.19
 twilio==6.45.0
+tzlocal==2.1
 urllib3==1.25.10
 visitor==0.1.3
 Werkzeug==1.0.1

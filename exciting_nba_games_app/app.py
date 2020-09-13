@@ -27,19 +27,20 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 
 app.config['SECRET_KEY'] = b'z=\x19\xd5\xc2\xf0\x137\xc0\n\xdc\x9a*}\xd2\xd2'
+TIMEOUT_VALUE = 7
 
+# Get private environment variables
 account_sid   = os.getenv("TWILIO_ACCOUNT_SID")
 auth_token    = os.getenv("TWILIO_AUTH_TOKEN")
 service_sid   = os.getenv("TWILIO_SERVICE_ID")
 twilio_number = os.getenv("TWILIO_PHONE_NUMBER")
+ENDPOINT      = os.getenv("DB_ENDPOINT")
+PORT          = os.getenv("DB_PORT")
+DBNAME        = os.getenv("DB_NAME")
+REGION        = os.getenv("AWS_REGION")
+USER          = os.getenv("DB_USER")
+PW            = os.getenv("DB_PW")
 
-ENDPOINT="database-nba-1.clh7xmakjgjd.us-east-1.rds.amazonaws.com"
-PORT="3306"
-DBNAME="dev"
-REGION="us-east-1"
-USER=os.getenv("DB_USER")
-PW=os.getenv("DB_PW")
-TIMEOUT_VALUE=7
 
 # blueprint for auth routes in our app
 auth = Blueprint('auth', __name__)
@@ -112,8 +113,8 @@ def validatePhone():
         return redirect(url_for('home',_anchor='getstarted'))
 
     try:
-        client = Client(account_sid, auth_token)
-        message = client.messages.create(body=str(code),from_=twilio_number,to=inputPhone)
+        data = {'message_body': str(code)}
+        send_SMS(data=data, phone_number=inputPhone)
         flash('A text message containing a 5 digit code has been sent to your number', 'info')
         flash('Verify', 'verify')
         return redirect(url_for('home',_anchor='getstarted'))
@@ -139,7 +140,6 @@ def verifyPhone():
         cur = conn.cursor()
         cur.execute(f"SELECT * FROM dev.users WHERE verifyCode={verificationCode}")
         results = cur.fetchall()
-        print(results)
         if results:
             if (datetime.now()-results[0][3]).seconds < 120:
                 cur.execute(f"UPDATE dev.users SET wantsNotifications=1, isVerified=1 WHERE verifyCode={verificationCode}")
@@ -199,6 +199,8 @@ def newly_exciting_games(cur, conn, games: List[Dict]):
             cur.execute(query_str)
             conn.commit()
             print(f"\tSuccess! Wrote {len(games)} new games to game_data")
+        else:
+            print(f"There were {len(games)} exciting games, but no verified active users.")
     except:
         raise
 
@@ -227,7 +229,7 @@ def update_users():
                 # check if we have already sent an SMS for any of our currently exciting games and exclude those.
                 sent_home_names = [row[2] for row in sent_games]
                 newly_cegs = [ceg for ceg in cegs if ceg['home_name'] not in sent_home_names]
-
+                
                 # if any remain, try sending a text with all newly exciting games
                 if len(newly_cegs)>0:
                     newly_exciting_games(cur, conn, newly_cegs)
@@ -252,7 +254,7 @@ def update_users():
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(update_users, 'interval', minutes=1)
+    scheduler.add_job(update_users, 'interval', seconds=5)
     # scheduler.add_job(refresh_games_db, 'interval', days=1, start_date='2020-09-10 00:00:00')
     scheduler.start()
     app.run(debug=True)

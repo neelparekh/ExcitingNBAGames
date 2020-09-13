@@ -14,11 +14,17 @@ def request_NBA_scoreboard() -> List[Dict]:
     -------
     scoreboard: List[Dict] (json)
     '''
-    NBA_BASE='https://data.nba.net/10s/'
-    r = requests.get(NBA_BASE + '/prod/v2/today.json').json()
-    todayScoreboard = r['links']['todayScoreboard']
-    scoreboard = requests.get(NBA_BASE + todayScoreboard).json()
-    return scoreboard
+    try:
+        NBA_BASE='https://data.nba.net/10s/'
+        r = requests.get(NBA_BASE + '/prod/v2/today.json')
+        r.raise_for_status()
+        todayScoreboard = r.json()['links']['todayScoreboard']
+        s = requests.get(NBA_BASE + todayScoreboard)
+        s.raise_for_status()
+        scoreboard = s.json()
+        return scoreboard
+    except requests.exceptions.HTTPError as err:
+        raise SystemExit(err)
 
 
 def get_currently_exciting_games(triggers) -> List[Dict]:
@@ -36,12 +42,12 @@ def get_currently_exciting_games(triggers) -> List[Dict]:
     '''
 
     ##### TESTS #####
-    # scoreboard = request_NBA_scoreboard()
-    # games = scoreboard['games']
+    scoreboard = request_NBA_scoreboard()
+    games = scoreboard['games']
     # games = inject_no_games()
     # games = inject_no_exciting_games()
     # games = inject_1_newly_exciting_1_unactivated_game()
-    games = inject_2_unexciting_1_old_2_newly_exciting_games()
+    # games = inject_2_unexciting_1_old_2_newly_exciting_games()
     #################
 
 
