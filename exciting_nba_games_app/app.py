@@ -16,7 +16,7 @@ from apscheduler.triggers.cron import CronTrigger
 import pytz
 from dotenv import load_dotenv
 from typing import List, Dict, Tuple
-
+import settings
 # custom functions
 from process_NBA_games import get_currently_exciting_games, games_to_text
 from send_sms import send_SMS
@@ -29,20 +29,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 
 app.config['SECRET_KEY'] = b'z=\x19\xd5\xc2\xf0\x137\xc0\n\xdc\x9a*}\xd2\xd2'
-TIMEOUT_VALUE = 7
 
-# Get private environment variables
-account_sid   = os.getenv("TWILIO_ACCOUNT_SID")
-auth_token    = os.getenv("TWILIO_AUTH_TOKEN")
-service_sid   = os.getenv("TWILIO_SERVICE_ID")
-twilio_number = os.getenv("TWILIO_PHONE_NUMBER")
-ENDPOINT      = os.getenv("DB_ENDPOINT")
-PORT          = os.getenv("DB_PORT")
-DBNAME        = os.getenv("DB_NAME")
-REGION        = os.getenv("AWS_REGION")
-USER          = os.getenv("DB_USER")
-PW            = os.getenv("DB_PW")
-
+TIMEOUT_VALUE = settings.TIMEOUT_VALUE
 
 # blueprint for auth routes in our app
 auth = Blueprint('auth', __name__)
@@ -94,18 +82,18 @@ def validatePhone():
         flash('The phone number you entered was invalid. Please try again', 'error')
         return redirect(url_for('home',_anchor='getstarted'))
     try:
-        conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW, connection_timeout=TIMEOUT_VALUE)
+        conn = mysql.connector.connect(host=settings.ENDPOINT, database=settings.DBNAME, user=settings.USER, password=settings.PW, connection_timeout=settings.TIMEOUT_VALUE)
         cur = conn.cursor()
-        cur.execute(f"SELECT isVerified FROM dev.users WHERE phone={inputPhone}")
+        cur.execute(f"SELECT isVerified FROM {settings.DBNAME}.users WHERE phone={inputPhone}")
         results = cur.fetchall()
         if results and results[0][0] == 1:
             cur.close()
             conn.close()
             raise Exception
         else:
-            cur.execute(f"DELETE FROM dev.users WHERE phone={inputPhone}")
+            cur.execute(f"DELETE FROM {settings.DBNAME}.users WHERE phone={inputPhone}")
             conn.commit()
-            cur.execute(f"INSERT INTO dev.users (phone, verifyCode, verifyCodeTimeStamp, isVerified, wantsNotifications) VALUES ({inputPhone}, {code}, '{datetime.now()}', {0}, {1})")
+            cur.execute(f"INSERT INTO {settings.DBNAME}.users (phone, verifyCode, verifyCodeTimeStamp, isVerified, wantsNotifications) VALUES ({inputPhone}, {code}, '{datetime.now()}', {0}, {1})")
             conn.commit()
             cur.close()
             conn.close()
@@ -122,7 +110,7 @@ def validatePhone():
     except:
         conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW, connection_timeout=TIMEOUT_VALUE)
         cur = conn.cursor()
-        cur.execute(f"DELETE FROM dev.users WHERE phone={inputPhone}")
+        cur.execute(f"DELETE FROM {settings.DBNAME}.users WHERE phone={inputPhone}")
         conn.commit()
         cur.close()
         conn.close()
@@ -137,20 +125,21 @@ def verifyPhone():
         flash('Please enter a 5 digit code', 'error')
         return redirect(url_for('home',_anchor='getstarted'))
     try:
-        conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW)
+        conn = mysql.connector.connect(host=settings.ENDPOINT, database=settings.DBNAME, user=settings.USER, password=settings.PW, connection_timeout=TIMEOUT_VALUE)
         cur = conn.cursor()
-        cur.execute(f"SELECT * FROM dev.users WHERE verifyCode={verificationCode}")
+        cur = conn.cursor()
+        cur.execute(f"SELECT * FROM {settings.DBNAME}.users WHERE verifyCode={verificationCode}")
         results = cur.fetchall()
         if results:
             if (datetime.now()-results[0][3]).seconds < 120:
-                cur.execute(f"UPDATE dev.users SET wantsNotifications=1, isVerified=1 WHERE verifyCode={verificationCode}")
+                cur.execute(f"UPDATE {settings.DBNAME}.users SET wantsNotifications=1, isVerified=1 WHERE verifyCode={verificationCode}")
                 conn.commit()
                 cur.close()
                 conn.close()
                 flash('Verification Complete! You will now receive notifications for all close games', 'success')
                 return redirect(url_for('home',_anchor='getstarted'))
             else:
-                cur.execute(f"DELETE FROM dev.users WHERE verifyCode={verificationCode}")
+                cur.execute(f"DELETE FROM {settings.DBNAME}.users WHERE verifyCode={verificationCode}")
                 conn.commit()
                 cur.close()
                 conn.close()
@@ -181,7 +170,7 @@ def newly_exciting_games(cur, conn, games: List[Dict]):
     '''
     try:
         # get all user verified consenting phone numbers
-        cur.execute(f"SELECT phone FROM users WHERE isVerified=1 AND wantsNotifications=1")
+        cur.execute(f"SELECT phone FROM {settings.DBNAME}.users WHERE isVerified=1 AND wantsNotifications=1")
         results = cur.fetchall()
         if results: # make sure we have users before trying anything!
             user_numbers = [row[0] for row in results]
@@ -195,7 +184,7 @@ def newly_exciting_games(cur, conn, games: List[Dict]):
 
             # update the db with newly sent games
             query_game_data = ", ".join(f"(CURRENT_TIMESTAMP(), '{game['home_name']}', '{game['away_name']}', '{game['clock']}', {game['score_diff']}, 1)" for game in games)
-            query_str = f"INSERT INTO dev.game_data (game_date, home, away, clock_remaining, score_diff, sent_sms) VALUES " + query_game_data
+            query_str = f"INSERT INTO {settings.DBNAME}.game_data (game_date, home, away, clock_remaining, score_diff, sent_sms) VALUES " + query_game_data
 
             cur.execute(query_str)
             conn.commit()
@@ -219,11 +208,11 @@ def update_users():
     cegs = get_currently_exciting_games(triggers)
     if cegs: # if there are currently exciting games
         try:
-            conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW)
+            conn = mysql.connector.connect(host=settings.ENDPOINT, database=settings.DBNAME, user=settings.USER, password=settings.PW, connection_timeout=settings.TIMEOUT_VALUE)
             cur = conn.cursor()
 
             # get previously processed games from today's date
-            cur.execute(f"SELECT * FROM dev.game_data WHERE sent_sms=1 AND date_format(game_date, '%Y-%m-%d')=CURRENT_DATE()")
+            cur.execute(f"SELECT * FROM {settings.DBNAME}.game_data WHERE sent_sms=1 AND date_format(game_date, '%Y-%m-%d')=CURRENT_DATE()")
             sent_games = cur.fetchall()
 
             if sent_games:
@@ -258,4 +247,4 @@ if __name__ == "__main__":
     scheduler.add_job(update_users, CronTrigger.from_crontab('* 15-23 * * *'), timezone=pytz.timezone('US/Pacific'))
     # scheduler.add_job(refresh_games_db, 'interval', days=1, start_date='2020-09-10 00:00:00')
     scheduler.start()
-    app.run(debug=True)
+    app.run()

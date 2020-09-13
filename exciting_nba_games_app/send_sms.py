@@ -1,9 +1,8 @@
 from twilio.rest import Client
-from dotenv import load_dotenv
-import os
 from typing import Dict, Tuple, List
+import settings
 
-load_dotenv() # load variables from .env into environment variables
+ # load variables from .env into environment variables
 
 def send_SMS(data: Dict, phone_number: str):
     '''
@@ -19,10 +18,10 @@ def send_SMS(data: Dict, phone_number: str):
 
     try:
         # Your Account sid and Auth Token from twilio.com/console
-        account_sid   = os.getenv("TWILIO_ACCOUNT_SID") 
-        auth_token    = os.getenv("TWILIO_AUTH_TOKEN")
-        service_sid   = os.getenv("TWILIO_SERVICE_ID")
-        twilio_number = os.getenv("TWILIO_PHONE_NUMBER")
+        account_sid   = settings.account_sid
+        auth_token    = settings.auth_token
+        service_sid   = settings.service_sid
+        twilio_number = settings.twilio_number
 
         # Make a client and POST a message
         client = Client(account_sid, auth_token)
