@@ -1,5 +1,5 @@
 # flask imports
-from flask import Flask, render_template, request, make_response, jsonify, redirect, Blueprint, url_for, flash
+from flask import Flask, render_template, request, make_response, jsonify, redirect, Blueprint, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 
@@ -10,16 +10,17 @@ from random import randint
 from datetime import datetime
 import mysql.connector
 from mysql.connector import Error
-from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
 from dotenv import load_dotenv
 from typing import List, Dict, Tuple
+
+# custom packages
 import settings
-# custom functions
+from twilio_connectors import send_SMS, validate_twilio_request
 from process_NBA_games import get_currently_exciting_games, games_to_text
-from send_sms import send_SMS
 
 
 # Basic config for Flask site
@@ -76,7 +77,7 @@ def signup():
 def validatePhone():
     inputPhone = str(request.form['phone'])
     valid = re.match("^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$", inputPhone)
-    inputPhone = '+1' + inputPhone.replace("-","").replace("(","").replace(")","")
+    inputPhone = re.sub(r'\D', '', inputPhone) # keep digits only
     code = randint(10000,99999)
     if not valid:
         flash('The phone number you entered was invalid. Please try again', 'error')
@@ -152,6 +153,60 @@ def verifyPhone():
     except:
         flash('We were unable to verify your number. Please refresh the page and try again', 'error')
         return redirect(url_for('home',_anchor='getstarted'))
+
+@app.route("/receive_sms", methods=["POST"])
+@validate_twilio_request
+def process_incoming_SMS():
+    message_body = request.values.get('Body', None)
+    phone_number = request.values.get('From', None)
+    
+    message_body = lower(re.sub(r'[\W_]+', '', message_body)) # remove all punctuation
+    resp = MessagingResponse()
+    try:
+        # get the latest verification and subscription status of the requesting phone number. 
+        conn = mysql.connector.connect(host=settings.ENDPOINT, database=settings.DBNAME, user=settings.USER, password=settings.PW, connection_timeout=settings.TIMEOUT_VALUE)
+        cur = conn.cursor()
+        cur.execute(f"SELECT isVerified, wantsNotifications from {settings.DBNAME}.users WHERE phone={phone_number} ORDER BY verifyCodeTimeStamp DESC LIMIT 1")
+        response = curr.fetchall()
+        is_verified = response[0][0]
+        wants_notifications = response[0][1]
+        
+        # now rocess the request
+        if len(response) > 0: seen_number = True # This phone number exists in our system.  
+            if body in ['unsubscribe','stop']:
+                if is_verified and wantsNotifications: # valid unsubscription request
+                    try:
+                        cur.execute(f"UPDATE {settings.DBNAME}.users SET wantsNotifications=0 WHERE phone={phone_number}")
+                        conn.commit()
+                        cur.close()
+                        conn.close()
+                        resp.message("You have been successfully unsubscribed. You may resubscribe by texting 'START'.")
+                    except:
+                        resp.message("Please try unsubscribing again in a few minutes.")
+                else: # ignore this unsubscription request!
+                    resp.message("")
+            elif body in ['start','resubscribe']:
+                if is_verified and not wantsNotifications: # valid re-subscription request
+                    try:
+                        conn = mysql.connector.connect(host=settings.ENDPOINT, database=settings.DBNAME, user=settings.USER, password=settings.PW, connection_timeout=settings.TIMEOUT_VALUE)
+                        cur = conn.cursor()
+                        cur.execute(f"UPDATE {settings.DBNAME}.users SET wantsNotifications=1 WHERE phone={phone_number}")
+                        conn.commit()
+                        cur.close()
+                        conn.close()
+                        resp.message("You have been successfully resubscribed. You may not receive notifications for games that have already begun today.")
+                    except:
+                        resp.message("Please try re-subscribing again in a few minutes.")
+                else: # ignore this resubscription request!
+                    resp.message("")
+            else: # ignore this request!
+                resp.message("")
+        else: # This phone number does not exist in our system. Ignore this request!!
+            resp.message("")  
+    except: # probably a larger issue and we should take care of it
+        raise
+
+    return str(resp)
 
 
 def newly_exciting_games(cur, conn, games: List[Dict]):
