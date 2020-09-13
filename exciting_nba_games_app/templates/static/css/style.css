@@ -1222,16 +1222,22 @@
 			border-radius: 0 4px 4px 0;
 		}
 
-		.toast {
+		#getstarted {
+			position: relative;
+		}
+		#getstarted .toast {
 		  position: absolute;
-		  bottom: 2%;
-		  left: 80%;
+		 	bottom: 0;
+			right: 0;
+			margin-right: 7px;
+			margin-bottom: 7px;
 		  min-height: 100px;
-		  min-width: 5vw;
+		  min-width: 5%;
+			max-width: 20%;
 		}
 
 		.error-toast {
-		  color: red;
+		  color: red!important;
 		}
 
 		.info-toast {
