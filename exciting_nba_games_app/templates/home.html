@@ -117,8 +117,7 @@
     {% with success = get_flashed_messages(category_filter=["success"]) %}
       {% if success %}
         {%- for msg in success %}
-        <div class="toast" role="alert" aria-live="assertive"
-             aria-atomic="true" data-delay=4500>
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="4500">
           <div class="toast-header">
             <strong class="mr-auto success-toast">Success</strong>
             <small>Just now</small>
@@ -134,8 +133,7 @@
     {% with info = get_flashed_messages(category_filter=["info"]) %}
       {% if info %}
         {%- for msg in info %}
-        <div class="toast" role="alert" aria-live="assertive"
-             aria-atomic="true" data-delay=4500>
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="4500">
           <div class="toast-header">
             <strong class="mr-auto info-toast">Info</strong>
             <small>Just now</small>
