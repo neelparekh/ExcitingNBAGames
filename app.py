@@ -201,7 +201,7 @@ def update_users():
     '''
     print(f'Checked for newly exciting games: {datetime.now()}')
     triggers = {
-        'score_diff': 10, # int
+        'score_diff': 15, # int
         'time': '6:00', # str (e.g. '05:00' is 5 mins remaining)
         'quarter': 4, # int (note that 5 is OT, 6 is 2OT)
         }
@@ -244,7 +244,7 @@ def update_users():
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(update_users, CronTrigger.from_crontab('* 15-23 * * *'), timezone=pytz.timezone('US/Pacific'))
+    scheduler.add_job(update_users, CronTrigger.from_crontab('* 11-23 * * *'), timezone=pytz.timezone('US/Pacific'))
     # scheduler.add_job(refresh_games_db, 'interval', days=1, start_date='2020-09-10 00:00:00')
     scheduler.start()
-    app.run()
+    app.run(debug=True)
