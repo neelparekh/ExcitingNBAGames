@@ -90,7 +90,7 @@ def validatePhone():
     if not valid:
         print('invalid')
         flash('The phone number you entered was invalid. Please try again', 'error')
-        return redirect(url_for('home'))
+        return redirect(url_for('home',_anchor='getstarted'))
     try:
         conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW, connection_timeout=TIMEOUT_VALUE)
         cur = conn.cursor()
@@ -109,13 +109,14 @@ def validatePhone():
             conn.close()
     except:
         flash('The phone number you entered is already in our system', 'info')
-        return redirect(url_for('home'))
+        return redirect(url_for('home',_anchor='getstarted'))
 
     try:
         client = Client(account_sid, auth_token)
         message = client.messages.create(body=str(code),from_=twilio_number,to=inputPhone)
         flash('A text message containing a 5 digit code has been sent to your number', 'info')
-        return redirect(url_for('home'))
+        flash('Verify', 'verify')
+        return redirect(url_for('home',_anchor='getstarted'))
     except:
         conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW, connection_timeout=TIMEOUT_VALUE)
         cur = conn.cursor()
@@ -124,7 +125,7 @@ def validatePhone():
         cur.close()
         conn.close()
         flash('We were unable to send a text message to the number you provided', 'error')
-        return redirect(url_for('home'))
+        return redirect(url_for('home',_anchor='getstarted'))
 
 
 @app.route("/verify_phone", methods=["POST"])
@@ -132,7 +133,7 @@ def verifyPhone():
     verificationCode = request.form['verifyCode']
     if int(verificationCode) < 10000 or int(verificationCode) > 99999:
         flash('Please enter a 5 digit code', 'error')
-        return redirect(url_for('home'))
+        return redirect(url_for('home',_anchor='getstarted'))
     try:
         conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW)
         cur = conn.cursor()
@@ -146,21 +147,21 @@ def verifyPhone():
                 cur.close()
                 conn.close()
                 flash('Verification Complete! You will now receive notifications for all close games', 'success')
-                return redirect(url_for('home'))
+                return redirect(url_for('home',_anchor='getstarted'))
             else:
                 cur.execute(f"DELETE FROM dev.users WHERE verifyCode={verificationCode}")
                 conn.commit()
                 cur.close()
                 conn.close()
                 flash('You must enter the code within 2 minutes. Please refresh & try again', 'error')
-                return redirect(url_for('home'))
+                return redirect(url_for('home',_anchor='getstarted'))
         else:
             flash('The code you entered was incorrect. Please try again', 'error')
             flash('Verify', 'verify')
-            return redirect(url_for('home'))
+            return redirect(url_for('home',_anchor='getstarted'))
     except:
         flash('We were unable to verify your number. Please refresh the page and try again', 'error')
-        return redirect(url_for('home'))
+        return redirect(url_for('home',_anchor='getstarted'))
 
 
 def newly_exciting_games(cur, conn, games: List[Dict]):
@@ -178,7 +179,7 @@ def newly_exciting_games(cur, conn, games: List[Dict]):
 
     '''
     try:
-        # get all user verified consenting phone numbers 
+        # get all user verified consenting phone numbers
         cur.execute(f"SELECT phone FROM users WHERE isVerified=1 AND wantsNotifications=1")
         results = cur.fetchall()
         if results: # make sure we have users before trying anything!
@@ -186,11 +187,11 @@ def newly_exciting_games(cur, conn, games: List[Dict]):
 
             # convert all game data into single text message
             data = {'message_body': games_to_text(games)}
-            
+
             # send an individual text to each phone number
             for phone_number in user_numbers:
                 send_SMS(data, phone_number)
-            
+
             # update the db with newly sent games
             query_game_data = ", ".join(f"(CURRENT_TIMESTAMP(), '{game['home_name']}', '{game['away_name']}', '{game['clock']}', {game['score_diff']}, 1)" for game in games)
             query_str = f"INSERT INTO dev.game_data (game_date, home, away, clock_remaining, score_diff, sent_sms) VALUES " + query_game_data
@@ -217,7 +218,7 @@ def update_users():
         try:
             conn = mysql.connector.connect(host=ENDPOINT, database=DBNAME, user=USER, password=PW)
             cur = conn.cursor()
-            
+
             # get previously processed games from today's date
             cur.execute(f"SELECT * FROM dev.game_data WHERE sent_sms=1 AND date_format(game_date, '%Y-%m-%d')=CURRENT_DATE()")
             sent_games = cur.fetchall()
@@ -236,7 +237,7 @@ def update_users():
                 # send a text for all currently exciting games
                 # using this might be an issue if the write to db for game_data fails even after successfully sending the message
                 newly_exciting_games(cur, conn, cegs)
-            
+
             # close our connection to db
             cur.close()
             conn.close()
