@@ -77,7 +77,7 @@ def signup():
 def validatePhone():
     inputPhone = str(request.form['phone'])
     valid = re.match("^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$", inputPhone)
-    inputPhone = re.sub(r'\D', '', inputPhone) # keep digits only
+    inputPhone = '+1' + re.sub(r'\D', '', inputPhone) # keep digits only
     code = randint(10000,99999)
     if not valid:
         flash('The phone number you entered was invalid. Please try again', 'error')
@@ -159,22 +159,23 @@ def verifyPhone():
 def process_incoming_SMS():
     message_body = request.values.get('Body', None)
     phone_number = request.values.get('From', None)
-    
-    message_body = lower(re.sub(r'[\W_]+', '', message_body)) # remove all punctuation
+    message_body = re.sub(r'[\W_]+', '', message_body).lower() # remove all punctuation
+    phone_number = re.sub(r'\D', '', phone_number).lower() # remove all punctuation
+    print(f"Message from {phone_number}: {message_body}")
     resp = MessagingResponse()
     try:
         # get the latest verification and subscription status of the requesting phone number. 
         conn = mysql.connector.connect(host=settings.ENDPOINT, database=settings.DBNAME, user=settings.USER, password=settings.PW, connection_timeout=settings.TIMEOUT_VALUE)
         cur = conn.cursor()
         cur.execute(f"SELECT isVerified, wantsNotifications from {settings.DBNAME}.users WHERE phone={phone_number} ORDER BY verifyCodeTimeStamp DESC LIMIT 1")
-        response = curr.fetchall()
+        response = cur.fetchall()
         is_verified = response[0][0]
         wants_notifications = response[0][1]
         
         # now rocess the request
-        if len(response) > 0: seen_number = True # This phone number exists in our system.  
-            if body in ['unsubscribe','stop']:
-                if is_verified and wantsNotifications: # valid unsubscription request
+        if len(response) > 0: # This phone number exists in our system.  
+            if message_body in ['unsubscribe','stop']:
+                if is_verified and wants_notifications: # valid unsubscription request
                     try:
                         cur.execute(f"UPDATE {settings.DBNAME}.users SET wantsNotifications=0 WHERE phone={phone_number}")
                         conn.commit()
@@ -185,8 +186,8 @@ def process_incoming_SMS():
                         resp.message("Please try unsubscribing again in a few minutes.")
                 else: # ignore this unsubscription request!
                     resp.message("")
-            elif body in ['start','resubscribe']:
-                if is_verified and not wantsNotifications: # valid re-subscription request
+            elif message_body in ['start','resubscribe']:
+                if is_verified and not wants_notifications: # valid re-subscription request
                     try:
                         conn = mysql.connector.connect(host=settings.ENDPOINT, database=settings.DBNAME, user=settings.USER, password=settings.PW, connection_timeout=settings.TIMEOUT_VALUE)
                         cur = conn.cursor()
