@@ -245,4 +245,4 @@ if __name__ == "__main__":
     scheduler.add_job(update_users, 'interval', minutes=1)
     # scheduler.add_job(refresh_games_db, 'interval', days=1, start_date='2020-09-10 00:00:00')
     scheduler.start()
-    app.run(debug=True)
+    app.run()
