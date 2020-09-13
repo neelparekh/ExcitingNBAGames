@@ -14,6 +14,14 @@
 	  scroll-behavior: smooth;
 	}
 
+	#comingsoon a:before{
+	    position: absolute;
+	    top: 2px;
+	    font-size: 12px;
+			content: "Coming Soon!";
+			color: gold;
+	}
+
 	body {
 		background: #fff;
 	}
