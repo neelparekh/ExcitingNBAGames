@@ -49,7 +49,7 @@
       </header>
       {% with verify = get_flashed_messages(category_filter=["verify"]) %}
         {% if verify %}
-          <h3>Enter the five digit code sent to your device</h3>
+          <h4>Enter the five digit code sent to your device</h4><br>
           <form id="verifyPhone" method="POST" action="/verify_phone">
             <div class="form-row">
               <div class="col-md-4"></div>
@@ -71,7 +71,7 @@
             </div>
           </form>
         {% else %}
-        <h3>Enter your phone number in the box below</h3>
+        <h4>Enter your phone number in the box below</h4><br>
         <form id="enterPhone" method="POST" action="/validate_phone">
           <div class="form-row">
             <div class="col-md-4"></div>
