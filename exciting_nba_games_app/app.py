@@ -12,6 +12,8 @@ import mysql.connector
 from mysql.connector import Error
 from twilio.rest import Client
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+import pytz
 from dotenv import load_dotenv
 from typing import List, Dict, Tuple
 
@@ -253,7 +255,7 @@ def update_users():
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(update_users, 'interval', minutes=1)
+    scheduler.add_job(update_users, CronTrigger.from_crontab('* 0,1,15-23 * * *'), timezone=pytz.timezone('US/Pacific'))
     # scheduler.add_job(refresh_games_db, 'interval', days=1, start_date='2020-09-10 00:00:00')
     scheduler.start()
     app.run(debug=True)
