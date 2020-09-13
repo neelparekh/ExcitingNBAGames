@@ -1,116 +1,155 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  <div class="emptyspace"></div>
-  <br>
-  <div class="text-center overlay-diag">
-    <h1 class="hero-font big-h1">NBA On Demand Notifications</h1>
-    <h2 class="hero-font">Never miss another close game in the playoffs</h2>
-  </div>
-  <div class="emptyspace"></div>
-  <h1 class="hero-font big-h1">How Does It Work?</h1>
-  <div class="section">
-    <div class="steps">1</div>
-    <br>
-    <h3>Enter your phone number in the box below</h3>
-    <form id="enterPhone" method="POST" action="/validate_phone">
-      <div class="form-row">
-        <div class="col-md-4">
-          <label class="sr-only" for="phone">Phone Number</label>
-          <div class="input-group mb-2">
-            <div class="input-group-prepend">
-              <div class="input-group-text">+1</div>
+  <section id="banner">
+    <h2>NBA On Demand Notifications</h2>
+    <p>Never miss another close game in the playoffs</p>
+    <ul class="actions">
+      <li>
+        <a href="#getstarted" class="button big">Get Started</a>
+      </li>
+    </ul>
+  </section>
+  <section id="one" class="wrapper style1 special">
+    <div class="container">
+      <header class="major">
+        <h2>How It Works</h2>
+        <p>Takes less than one minute to set up!</p>
+      </header>
+      <div class="row 150%">
+        <div class="4u 12u$(medium)">
+          <section class="box">
+            <i class="icon big rounded color1 fa-phone"></i>
+            <h3>Enter Your Mobile Number</h3>
+            <p>*currently only accepting US numbers</p>
+          </section>
+        </div>
+        <div class="4u 12u$(medium)">
+          <section class="box">
+            <i class="icon big rounded color9 fa-check-square-o"></i>
+            <h3>Verify Your Mobile Device</h3>
+            <p>Enter the five digit code sent to your mobile device</p>
+          </section>
+        </div>
+        <div class="4u$ 12u$(medium)">
+          <section class="box">
+            <i class="icon big rounded color6 fa-rocket"></i>
+            <h3>Never Miss Another Game</h3>
+            <p>Text will be automatically sent when a game is on the line.</p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="getstarted" class="wrapper style2 special">
+    <div class="container">
+      <header class="major">
+        <h2 >Get Started Below</h2>
+        <p>Only a few clicks left between you and real-time crunch time notifications</p>
+      </header>
+      {% with verify = get_flashed_messages(category_filter=["verify"]) %}
+        {% if verify %}
+          <h3>Enter the five digit code sent to your device</h3>
+          <form id="verifyPhone" method="POST" action="/verify_phone">
+            <div class="form-row">
+              <div class="col-md-4"></div>
+              <div class="col-md-3">
+                <label class="sr-only" for="verifyCode">Code</label>
+                <div class="input-group mb-2">
+                  <input id="verifyCode" type="number" class="form-control" name="verifyCode"
+                         pattern="[1-9][0-9]{4}"
+                         onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+                  >
+                </div>
+              </div>
+              <div class="col-auto">
+                <button id="verifyBtn" class="btn btn-success" type="submit">Verify Number</button>
+              </div>
+              <div id="verifyLoading" class="spinner-border text-primary" role="status" style="margin-left: 7px">
+                <span class="sr-only">Loading...</span>
+              </div>
             </div>
-            <input id="phone" type="tel" class="form-control" name="phone"
-                   autocomplete="tel" placeholder="123-456-7890" required
-                   onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+          </form>
+        {% else %}
+        <h3>Enter your phone number in the box below</h3>
+        <form id="enterPhone" method="POST" action="/validate_phone">
+          <div class="form-row">
+            <div class="col-md-4"></div>
+            <div class="col-md-3">
+              <label class="sr-only" for="phone">Phone Number</label>
+              <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">+1</div>
+                </div>
+                <input id="phone" type="tel" class="form-control" name="phone"
+                       autocomplete="tel" placeholder="123-456-7890" required
+                       onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+              </div>
+            </div>
+            <div class="col-auto">
+              <button id="validateBtn" class="btn btn-success" type="submit">Get Started!</button>
+            </div>
+            <div id="validateLoading" class="spinner-border text-primary" role="status" style="margin-left: 7px">
+              <span class="sr-only">Loading...</span>
+            </div>
           </div>
-        </div>
-        <div class="col-auto">
-          <button id="validateBtn" class="btn btn-success" type="submit">Get Started!</button>
-        </div>
-        <div id="validateLoading" class="spinner-border text-primary" role="status" style="margin-left: 7px">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </div>
-    </form>
-  </div>
-  <br><br>
-  <div class="section">
-    <div class="steps">2</div>
-    <br>
-    <form id="verifyPhone" method="POST" action="/verify_phone">
-      <div class="form-row">
-        <div class="col-md-4">
-          <label class="sr-only" for="verifyCode">Code</label>
-          <div class="input-group mb-2">
-            <input id="verifyCode" type="number" class="form-control" name="verifyCode"
-                   pattern="[1-9][0-9]{4}"
-                   onkeypress='return event.charCode >= 48 && event.charCode <= 57'
-            >
-          </div>
-        </div>
-        <div class="col-auto">
-          <button id="verifyBtn" class="btn btn-success" type="submit">Verify Number</button>
-        </div>
-        <div id="verifyLoading" class="spinner-border text-primary" role="status" style="margin-left: 7px">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </div>
-    </form>
-  </div>
+        </form>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </section>
   <div>
-    {% with errors = get_flashed_messages(category_filter=["error"]) %}
-      {% if errors %}
-        {%- for msg in errors %}
-        <div class="toast error-toast" role="alert alert-warning" aria-live="assertive"
-             aria-atomic="true" data-delay=4500>
-          <div class="toast-header">
-            <strong class="mr-auto">Error</strong>
-            <small>Just now</small>
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="toast-body">{{msg}}</div>
+  {% with errors = get_flashed_messages(category_filter=["error"]) %}
+    {% if errors %}
+      {%- for msg in errors %}
+      <div class="toast error-toast" role="alert alert-warning" aria-live="assertive"
+           aria-atomic="true" data-delay=4500>
+        <div class="toast-header">
+          <strong class="mr-auto">Error</strong>
+          <small>Just now</small>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-        {% endfor -%}
-      {% endif %}
-    {% endwith %}
-    {% with success = get_flashed_messages(category_filter=["success"]) %}
-      {% if success %}
-        {%- for msg in success %}
-        <div class="toast success-toast" role="alert alert-success" aria-live="assertive"
-             aria-atomic="true" data-delay=4500>
-          <div class="toast-header">
-            <strong class="mr-auto">Success</strong>
-            <small>Just now</small>
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="toast-body">{{msg}}</div>
+        <div class="toast-body">{{msg}}</div>
+      </div>
+      {% endfor -%}
+    {% endif %}
+  {% endwith %}
+  {% with success = get_flashed_messages(category_filter=["success"]) %}
+    {% if success %}
+      {%- for msg in success %}
+      <div class="toast success-toast" role="alert alert-success" aria-live="assertive"
+           aria-atomic="true" data-delay=4500>
+        <div class="toast-header">
+          <strong class="mr-auto">Success</strong>
+          <small>Just now</small>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-        {% endfor -%}
-      {% endif %}
-    {% endwith %}
-    {% with info = get_flashed_messages(category_filter=["info"]) %}
-      {% if info %}
-        {%- for msg in info %}
-        <div class="toast info-toast" role="alert alert-info" aria-live="assertive"
-             aria-atomic="true" data-delay=4500>
-          <div class="toast-header">
-            <strong class="mr-auto">Info</strong>
-            <small>Just now</small>
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="toast-body">{{msg}}</div>
+        <div class="toast-body">{{msg}}</div>
+      </div>
+      {% endfor -%}
+    {% endif %}
+  {% endwith %}
+  {% with info = get_flashed_messages(category_filter=["info"]) %}
+    {% if info %}
+      {%- for msg in info %}
+      <div class="toast info-toast" role="alert alert-info" aria-live="assertive"
+           aria-atomic="true" data-delay=4500>
+        <div class="toast-header">
+          <strong class="mr-auto">Info</strong>
+          <small>Just now</small>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-        {% endfor -%}
-      {% endif %}
-    {% endwith %}
+        <div class="toast-body">{{msg}}</div>
+      </div>
+      {% endfor -%}
+    {% endif %}
+  {% endwith %}
   </div>
 {% endblock %}
 

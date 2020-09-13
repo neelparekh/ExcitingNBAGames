@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/skel.css' ) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css' ) }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style-xlarge.css' ) }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css' ) }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <title>NBA On Demand</title>
   </head>
@@ -25,17 +28,51 @@
         </ul>
         <a href="https://ko-fi.com/nbaondemand"  target="_blank" class="btn btn-outline-success my-2 my-sm-0" role="button">Donate!</a>
     </nav>
-    <div class="container">
-      {% block content %}
-      {% endblock %}
-    </div>
-
+    {% block content %}
+    {% endblock %}
+    <footer id="footer">
+      <div class="container">
+        <section class="links">
+          <div class="row">
+            <section class="">
+              <h3>Made by two guys bored during quarantine</h3>
+              <ul class="unstyled">
+                <li><a href="#">Please don't ban us Adam Silver</a></li>
+              </ul>
+            </section>
+          </div>
+        </section>
+        <div class="row">
+          <div class="8u 12u$(medium)">
+            <ul class="copyright">
+              <li>&copy; WATTBA. All rights reserved.</li>
+            </ul>
+          </div>
+          <div class="4u$ 12u$(medium)">
+            <ul class="icons">
+              <li>
+                <a href="https://ko-fi.com/nbaondemand" class="icon rounded fa-coffee" data-toggle="tooltip" title="Donate!"></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script src="static/js/jquery.min.js"></script>
+		<script src="static/js/skel.min.js"></script>
+		<script src="static/js/skel-layers.min.js"></script>
+		<script src="static/js/init.js"></script>
+    <script src="https://unpkg.com/smoothscroll-polyfill/dist/smoothscroll.min.js"></script>
+    <script src="https://unpkg.com/smoothscroll-anchor-polyfill"></script>
     {% block addScripts %}
+    <script type="text/javascript">
+      $('[data-toggle="tooltip"]').tooltip();
+    </script>
     {% endblock %}
   </body>
 </html>
