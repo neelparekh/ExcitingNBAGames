@@ -239,7 +239,6 @@ def update_users():
             raise
     else:
         print("\tNo games are currently exciting. :(")
-        sys.stdout.flush()
 
 
 
