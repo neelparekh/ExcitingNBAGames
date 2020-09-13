@@ -89,7 +89,6 @@ def validatePhone():
     inputPhone = '+1' + inputPhone.replace("-","").replace("(","").replace(")","")
     code = randint(10000,99999)
     if not valid:
-        print('invalid')
         flash('The phone number you entered was invalid. Please try again', 'error')
         return redirect(url_for('home',_anchor='getstarted'))
     try:
@@ -229,7 +228,7 @@ def update_users():
                 # check if we have already sent an SMS for any of our currently exciting games and exclude those.
                 sent_home_names = [row[2] for row in sent_games]
                 newly_cegs = [ceg for ceg in cegs if ceg['home_name'] not in sent_home_names]
-                
+
                 # if any remain, try sending a text with all newly exciting games
                 if len(newly_cegs)>0:
                     newly_exciting_games(cur, conn, newly_cegs)
