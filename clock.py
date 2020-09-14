@@ -1,6 +1,7 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from app import update_users
+import pytz
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(update_users, CronTrigger.from_crontab('* 11-23 * * *'), timezone=pytz.timezone('US/Pacific'))
