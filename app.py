@@ -195,7 +195,7 @@ def process_incoming_SMS():
                         conn.commit()
                         cur.close()
                         conn.close()
-                        resp.message("You have been successfully resubscribed. You may not receive notifications for games that have already begun today.")
+                        resp.message("Welcome back! You may not receive notifications for games that have already begun today.")
                     except:
                         resp.message("Please try re-subscribing again in a few minutes.")
                 else: # ignore this resubscription request!
