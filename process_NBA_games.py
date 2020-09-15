@@ -3,7 +3,7 @@ import datetime
 from format_utils import *
 from typing import List, Dict, Tuple
 
-from tests import *
+from test_polling import *
 
 
 def request_NBA_scoreboard() -> List[Dict]:
