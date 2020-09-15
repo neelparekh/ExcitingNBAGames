@@ -164,16 +164,16 @@ def process_incoming_SMS():
     print(f"Message from {phone_number}: {message_body}")
     resp = MessagingResponse()
     try:
-        # get the latest verification and subscription status of the requesting phone number. 
+        # get the latest verification and subscription status of the requesting phone number.
         conn = mysql.connector.connect(host=settings.ENDPOINT, database=settings.DBNAME, user=settings.USER, password=settings.PW, connection_timeout=settings.TIMEOUT_VALUE)
         cur = conn.cursor()
         cur.execute(f"SELECT isVerified, wantsNotifications from {settings.DBNAME}.users WHERE phone={phone_number} ORDER BY verifyCodeTimeStamp DESC LIMIT 1")
         response = cur.fetchall()
         is_verified = response[0][0]
         wants_notifications = response[0][1]
-        
+
         # now rocess the request
-        if len(response) > 0: # This phone number exists in our system.  
+        if len(response) > 0: # This phone number exists in our system.
             if message_body in ['unsubscribe','stop']:
                 if is_verified and wants_notifications: # valid unsubscription request
                     try:
@@ -203,7 +203,7 @@ def process_incoming_SMS():
             else: # ignore this request!
                 resp.message("")
         else: # This phone number does not exist in our system. Ignore this request!!
-            resp.message("")  
+            resp.message("")
     except: # probably a larger issue and we should take care of it
         raise
 
@@ -299,8 +299,8 @@ def update_users():
 
 
 if __name__ == "__main__":
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(update_users, CronTrigger.from_crontab('* 11-23 * * *'), timezone=pytz.timezone('US/Pacific'))
+    scheduler = BackgroundScheduler(timezone('PST'))
+    scheduler.add_job(update_users, CronTrigger.from_crontab('* 22-23 * * *'), ))
     # scheduler.add_job(refresh_games_db, 'interval', days=1, start_date='2020-09-10 00:00:00')
     scheduler.start()
     app.run()
