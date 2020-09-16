@@ -65,9 +65,9 @@ def get_currently_exciting_games(triggers) -> List[Dict]:
         
         home_name = home['triCode']
         away_name = away['triCode']
-        home_score = int(home['score'])
-        away_score = int(away['score'])
-        score_diff = abs(int(home['score'])-int(away['score']))
+        home_score = format_score(home['score'])
+        away_score = format_score(away['score'])
+        score_diff = abs(home_score-away_score)
         clock = format_datetime(game['clock'])
         quarter = game['period']['current']
         

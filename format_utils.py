@@ -20,3 +20,9 @@ def format_quarter(q) -> str:
         return str(q%4) + 'OT'
     else:
         return str(q)
+
+def format_score(s) -> str:
+    if s == '':
+        return o
+    else:
+        return int(s)
