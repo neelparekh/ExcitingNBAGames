@@ -137,6 +137,13 @@ def verifyPhone():
                 conn.commit()
                 cur.close()
                 conn.close()
+                # send a welcome text upon successful verification.
+                phone_number = results[0][1]
+                print(f"Welcome {phone_number}!")
+                welcome_message = "Welcome to sportsalerts.io! You will now receive messages as soon as a game becomes exciting. You may unsubscribe by replying 'STOP'. Msg&Data rates may apply."
+                data = {'message_body': welcome_message}
+                send_SMS(data, phone_number)
+
                 flash('Verification Complete! You will now receive notifications for all close games', 'success')
                 return redirect(url_for('home',_anchor='getstarted'))
             else:
