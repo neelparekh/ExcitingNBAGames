@@ -103,7 +103,7 @@ def validatePhone():
         return redirect(url_for('home',_anchor='getstarted'))
 
     try:
-        data = {'message_body': str(code)}
+        data = {'message_body': f"Your sportsalerts.io verification code is: {str(code)}"}
         send_SMS(data=data, phone_number=inputPhone)
         flash('A text message containing a 5 digit code has been sent to your number', 'info')
         flash('Verify', 'verify')
@@ -137,6 +137,13 @@ def verifyPhone():
                 conn.commit()
                 cur.close()
                 conn.close()
+                # send a welcome text upon successful verification.
+                phone_number = results[0][1]
+                print(f"Welcome {phone_number}!")
+                welcome_message = "Welcome to sportsalerts.io! You will now receive messages as soon as a game becomes exciting. You may unsubscribe by replying 'STOP'. Msg&Data rates may apply."
+                data = {'message_body': welcome_message}
+                send_SMS(data, phone_number)
+                # flash confirmation
                 flash('Verification Complete! You will now receive notifications for all close games', 'success')
                 return redirect(url_for('home',_anchor='getstarted'))
             else:
