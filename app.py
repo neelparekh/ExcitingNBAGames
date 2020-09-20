@@ -264,7 +264,7 @@ def update_users():
     '''
     print(f'Checked for newly exciting games: {datetime.now()}')
     triggers = {
-        'score_diff': 15, # int
+        'score_diff': 10, # int
         'time': '6:00', # str (e.g. '05:00' is 5 mins remaining)
         'quarter': 4, # int (note that 5 is OT, 6 is 2OT)
         }
