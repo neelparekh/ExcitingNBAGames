@@ -267,6 +267,7 @@ def update_users():
         'score_diff': 10, # int
         'time': '6:00', # str (e.g. '05:00' is 5 mins remaining)
         'quarter': 4, # int (note that 5 is OT, 6 is 2OT)
+        'score_time_ratio': 3.3,
         }
     cegs = get_currently_exciting_games(triggers)
     if cegs: # if there are currently exciting games

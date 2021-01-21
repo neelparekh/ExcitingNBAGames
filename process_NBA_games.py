@@ -73,7 +73,11 @@ def get_currently_exciting_games(triggers) -> List[Dict]:
         
         # If it's an interesting game, return the game info
         triggers_time = format_datetime(triggers['time'])
-        if score_diff <= triggers['score_diff'] and clock <= triggers_time and quarter >= triggers['quarter']:
+        score_time_ratio = score_diff / (1+int(clock.strftime('%M'))) # score diff to mins remaining
+        if (score_diff <= triggers['score_diff'] 
+            and clock <= triggers_time 
+            and quarter >= triggers['quarter'] 
+            and score_time_ratio <= triggers['score_time_ratio']):
             exciting_games.append({
                 'home_name': home_name,
                 'away_name': away_name,
